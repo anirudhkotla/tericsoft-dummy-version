@@ -1,15 +1,31 @@
-document.getElementById('contactForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const message = document.getElementById('message').value;
-    
-    // Here you would typically send the data to a server
-    console.log('Form submitted:', { name, email, message });
-    
-    alert('Thank you for your message! We will get back to you soon.');
-    
-    // Reset the form
-    document.getElementById('contactForm').reset();
+document.addEventListener('DOMContentLoaded', () => {
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                message: document.getElementById('message').value,
+            };
+
+            // Initialize Supabase client
+            const supabaseUrl = 'YOUR_SUPABASE_URL';
+            const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+            const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+            // Insert data into Supabase
+            const { data, error } = await supabase
+                .from('contacts')
+                .insert([formData]);
+
+            if (error) {
+                console.error('Error submitting form:', error);
+                alert('Error submitting form. Please try again.');
+            } else {
+                alert('Form submitted successfully!');
+                contactForm.reset();
+            }
+        });
+    }
 });
